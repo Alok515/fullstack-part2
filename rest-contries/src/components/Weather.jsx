@@ -16,7 +16,7 @@ const Weather = ({city}) => {
     return (
         <div>
             <h2>Weather in {city}</h2>
-            <p>Temperature: {weather?.main?.temp || 0} Celcius</p>
+            <p>Temperature: { weather?.main?.temp ? (weather?.main?.temp - 273).toFixed(2) : 0 } Celcius</p>
             { weather && <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt={weather.weather[0].description} /> }
             <p>wind: {weather?.wind?.speed || 0} m/s</p>
         </div>

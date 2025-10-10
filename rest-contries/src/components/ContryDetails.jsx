@@ -10,7 +10,7 @@ const Languages = ({languages}) => {
 
 const ContryDetails = ({contry}) => {
     const flagStyle = {
-        width: '250px',
+        width: '300px',
         height: '250px'
     }
     return (

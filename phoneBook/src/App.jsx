@@ -37,10 +37,7 @@ const App = () => {
       return;
     }
 
-    const randomId = Math.floor(Math.random() * 1000000);
-
     const personObj = {
-      id: String(randomId),
       number: newNumber,
       name: newName
     }
@@ -49,8 +46,8 @@ const App = () => {
       const addedPerson = await createPerson(personObj);
       if (addedPerson) {
         console.log("User added:", addedPerson);
-        setPersons(persons.concat(personObj));
-        setFilterPersons(persons.concat(personObj));
+        setPersons(persons.concat(addedPerson));
+        setFilterPersons(persons.concat(addedPerson));
         notifier(true, `User ${addedPerson.name} added`);
       }
     } catch (error) {
@@ -76,31 +73,35 @@ const App = () => {
     }, 5000);
   }
 
+  async function getData() {
+    try {
+      const presonsData = await getAllPersons();
+      setPersons(presonsData);
+      setFilterPersons(presonsData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   //get Data
   useEffect(() => {
-    async function getData() {
-      try {
-        const presonsData = await getAllPersons();
-        setPersons(presonsData);
-        setFilterPersons(presonsData);
-      } catch (error) {
-        console.log(error);
-      }
-    }
     getData();
   }, []);
 
   const deletePersonHandler = async (id) => {
-    const person = persons.find(person => person.id === id);
+    const person = persons.find(person => person.id == id);
     try {
       if (!person) throw new Error("Person not found");
       if (confirm(`Delete ${person.name}?`)) {
-        const deletedPerson = await deletePerson(id);
-        if (deletedPerson) {
+        const status = await deletePerson(id);
+        if (status == 204) {
           setPersons(persons.filter(person => person.id !== id));
           setFilterPersons(filterPersons.filter(person => person.id !== id));
-          console.log("User deleted:", deletedPerson);
-          notifier(true, `User ${deletedPerson.name} deleted`);
+          console.log("User deleted:", person);
+          notifier(true, `User ${person.name} deleted`);
+        }else {
+          console.log("User not deleted:", status);
+          notifier(false, `User ${person.name} not found to delete`);
         }
       }
     } catch (error) {
@@ -113,7 +114,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      { message.value && <Notification message={message} /> }
+      {message.value && <Notification message={message} />}
       <FilterPerson handleFilter={handleFilter} />
       <br /><br />
       <PersonForm newName={newName} newNumber={newNumber} handleNameChange={(e) => setNewName(e.target.value)} handleNumberChange={(e) => setNewNumber(e.target.value)} handleSubmit={handleSubmit} />
